@@ -8,10 +8,36 @@ import java.sql.SQLException;
 
 import me.ujuin81.user.domain.User;
 
-public abstract class UserDao {
+public class UserDao {
+	
+	ConnectionMaker connectionMaker;
+	
+	public UserDao() {
+		connectionMaker = new DConnectionMaker();
+	}
+	
+	public static void main(String[] args)  throws ClassNotFoundException, SQLException {
+		UserDao dao = new UserDao();
+		
+		User user = new User();
+		user.setId("ujuin81");
+		user.setName("이름");
+		user.setPassword("password!");
+		
+		dao.add(user);
+		
+		System.out.println(user.getId() + "등록 성공");
+		
+		User user2 = dao.get(user.getId());
+		System.out.println(user2.getName());
+		System.out.println(user2.getPassword());
+		
+		System.out.println(user2.getId() + "조회 성공");
+	}
+
 	
 	public void add(User user) throws ClassNotFoundException, SQLException {
-		Connection c = getConnection();
+		Connection c = connectionMaker.makeConnection();
 		
 		PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
 		ps.setString(1, user.getId());
@@ -25,7 +51,7 @@ public abstract class UserDao {
 	}
 	
 	public User get(String id) throws ClassNotFoundException, SQLException{		
-		Connection c = getConnection();
+		Connection c = connectionMaker.makeConnection();
 		
 		PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
 		ps.setString(1, id);
@@ -43,8 +69,5 @@ public abstract class UserDao {
 		
 		return user;
 	}
-	
-	//관심사 분리 -> 상속을 통한 확장 (팩토리 메소드 패턴)
-	public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 	
 }
