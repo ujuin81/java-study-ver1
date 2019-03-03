@@ -7,8 +7,7 @@ import me.ujuin81.user.domain.User;
 public class UserDaoTest {
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		ConnectionMaker connectionMaker = new NConnectionMaker();
-		UserDao dao = new UserDao(connectionMaker); //두 오브젝트 사이의 의존관계 설정 
+		UserDao dao = new DaoFactory().userDao();
 		
 		User user = new User();
 		user.setId("ujuin81");
