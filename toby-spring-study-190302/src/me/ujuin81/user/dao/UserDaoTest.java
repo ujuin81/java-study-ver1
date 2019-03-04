@@ -1,37 +1,80 @@
 package me.ujuin81.user.dao;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.sql.SQLException;
 
+import org.junit.Test;
+import org.junit.runner.JUnitCore;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import me.ujuin81.user.domain.User;
 
 public class UserDaoTest {
 
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+	@Test
+	public void addAndGet() throws SQLException {
 		
 		ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
 		UserDao dao = context.getBean("userDao", UserDao.class);
 		
-		User user = new User();
-		user.setId("ujuin81");
-		user.setName("이름");
-		user.setPassword("password!");
+		User user1 = new User("uju", "우주", "pwd");
+		User user2 = new User("jigu", "지구", "jigupwd");
 		
-		dao.add(user);
+		dao.deleteAll(); 		
+		assertThat(dao.getCount(), is(0)); 
 		
-		System.out.println(user.getId() + " 등록 성공");
+		dao.add(user1);
+		dao.add(user2);
+		assertThat(dao.getCount(), is(2));
 		
-		User user2 = dao.get(user.getId());
+			
+		User userget1 = dao.get(user1.getId());
+		assertThat(user1.getName(), is(userget1.getName()));
+		assertThat(user1.getPassword(), is(userget1.getPassword()));
 		
-		//테스트 검증
-		if(!user.getName().equals(user2.getName())) {
-			System.out.println("테스트 실패 (name)");
-		} else if(!user.getPassword().equals(user2.getPassword())) {
-			System.out.println("테스트 실패 (password)");
-		}else {
-			System.out.println(user.getId() + " 조회 테스트 성공");
-		}		
+		User userget2 = dao.get(user2.getId());
+		assertThat(user2.getName(), is(userget2.getName()));
+		assertThat(user2.getPassword(), is(userget2.getPassword()));
+	}
+	
+	@Test
+	public void count() throws SQLException{
+		ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+		UserDao dao = context.getBean("userDao", UserDao.class);
+		
+		User user1 = new User("uju1", "우주1", "pw1");
+		User user2 = new User("uju2", "우주2", "pw2");
+		User user3 = new User("uju3", "우주3", "pw3");
+		
+		dao.deleteAll();
+		assertThat(dao.getCount(), is(0));
+		
+		dao.add(user1);
+		assertThat(dao.getCount(), is(1));
+		
+		dao.add(user2);
+		assertThat(dao.getCount(), is(2));
+		
+		dao.add(user3);
+		assertThat(dao.getCount(), is(3));
+	}
+	
+	@Test(expected=EmptyResultDataAccessException.class) //실행 중 예외 발생 기대 
+	public void getUserFailure() throws SQLException{
+		ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+		UserDao dao = context.getBean("userDao", UserDao.class);
+		
+		dao.deleteAll();
+		assertThat(dao.getCount(), is(0));
+		
+		dao.get("unknown_id"); 
+	}
+	
+	public static void main(String[] args) {
+		JUnitCore.main("me.ujuin81.user.dao.UserDaoTest");						
 	}
 }
