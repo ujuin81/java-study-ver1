@@ -12,7 +12,8 @@ public class UserDao {
 	
 	ConnectionMaker connectionMaker;
 	
-	public UserDao(ConnectionMaker connectionMaker) {
+	//생성자 -> setter 메소드 이용한 의존 관계 주입으로 변경
+	public void setConnectionMaker(ConnectionMaker connectionMaker) {
 		this.connectionMaker = connectionMaker;
 	}
 	
