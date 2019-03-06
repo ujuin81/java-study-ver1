@@ -45,15 +45,7 @@ public class UserDao {
 	}
 	
 	public void deleteAll() throws SQLException{ 
-		//전략 패턴의 Client로서 해당 메소드에 적절한 전략(로직)을 제공
-		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
-			
-			@Override
-			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-				PreparedStatement ps = c.prepareStatement("delete from users");
-				return ps;
-			}
-		});
+		this.jdbcContext.executeSql("delete from users");
 	}
 	
 	public User get(String id) throws SQLException{		
