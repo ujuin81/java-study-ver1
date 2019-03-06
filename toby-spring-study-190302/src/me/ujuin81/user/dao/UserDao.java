@@ -21,39 +21,15 @@ public class UserDao {
 		this.dataSource = dataSource;
 	}
 	
-	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException{
-		Connection c = null;
-		PreparedStatement ps = null;
-		
-		try {
-			c = dataSource.getConnection();
-			
-			ps = stmt.makePreparedStatement(c); //<--PreparedStatement 생성이 필요한 시점에 호출되어 사용됨.  
-			
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			throw e;
-		}
-		finally {
-			if(ps != null) {
-				try {
-					ps.close();
-				} catch (SQLException e) {
-				}
-			}
-			
-			if(c !=null) {
-				try {
-					c.close();
-				} catch (SQLException e) {
-				}
-			}
-		}
+	private JdbcContext jdbcContext;
+	
+	public void setJdbcContext(JdbcContext jdbcContext) {
+		this.jdbcContext = jdbcContext;
 	}
 	
 	public void add(final User user) throws SQLException {
-		//로컬 클래스
-		class AddStatement implements StatementStrategy {
+		//로컬 클래스 -> 익명 내부 클래스
+		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
 			
 			@Override
 			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
@@ -65,15 +41,23 @@ public class UserDao {
 				
 				return ps;
 			}
-
-		}
-		
-		StatementStrategy st = new AddStatement();
-		jdbcContextWithStatementStrategy(st);
+		});
+	}
+	
+	public void deleteAll() throws SQLException{ 
+		//전략 패턴의 Client로서 해당 메소드에 적절한 전략(로직)을 제공
+		this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
+			
+			@Override
+			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+				PreparedStatement ps = c.prepareStatement("delete from users");
+				return ps;
+			}
+		});
 	}
 	
 	public User get(String id) throws SQLException{		
-				
+		
 		Connection c = null;		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -119,22 +103,6 @@ public class UserDao {
 				}
 			}
 		}
-	}
-	
-	public void deleteAll() throws SQLException{ 
-		class DeleteAllStatement implements StatementStrategy {
-
-			@Override
-			public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-				PreparedStatement ps = c.prepareStatement("delete from users");
-				return ps;
-			}
-
-		}
-		
-		//전략 패턴의 Client로서 해당 메소드에 적절한 전략(로직)을 제공
-		StatementStrategy st = new DeleteAllStatement(); 
-		jdbcContextWithStatementStrategy(st);
 	}
 	
 	public int getCount() throws SQLException{
