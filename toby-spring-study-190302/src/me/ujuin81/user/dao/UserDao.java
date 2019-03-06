@@ -16,15 +16,15 @@ public class UserDao {
 	
 	//DB 커넥션 생성 기능 -> DataSource 로 변경 
 	private DataSource dataSource;
+	private JdbcContext jdbcContext;
 		
 	public void setDataSource(DataSource dataSource) {
+		//굳이 인터페이스를 두지 않아도 될만큼 긴밀한 관계를 갖는 클래스들을 어색하게 따로 빈으로 분리하지 않고
+		//, 내부에서 직접 만들어 사용하면서도 다른 오브젝트에 대한 DI를 적용할 수 있다.  
+		this.jdbcContext = new JdbcContext();
+		this.jdbcContext.setDataSource(dataSource);
+		
 		this.dataSource = dataSource;
-	}
-	
-	private JdbcContext jdbcContext;
-	
-	public void setJdbcContext(JdbcContext jdbcContext) {
-		this.jdbcContext = jdbcContext;
 	}
 	
 	public void add(final User user) throws SQLException {
