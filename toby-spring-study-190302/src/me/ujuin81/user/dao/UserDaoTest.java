@@ -21,6 +21,7 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import me.ujuin81.user.domain.Level;
 import me.ujuin81.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,13 +35,33 @@ public class UserDaoTest {
 	
 	@Before
 	public void setUp() {		
-		this.user1 = new User("uju2", "우주2", "pw2");
-		this.user2 = new User("uju3", "우주3", "pw3");
-		this.user3 = new User("uju1", "우주1", "pw1");
+		this.user1 = new User("gyumee", "박성철", "springno1", Level.BASIC, 1, 0);
+		this.user2 = new User("leegw700", "이길원", "springno2", Level.SILVER,55, 10);
+		this.user3 = new User("bumjin", "박범진", "springno3", Level.GOLD, 100, 40);
+	}
+	
+	@Test
+	public void update() {
+		dao.deleteAll();
+		
+		dao.add(user1);
+		dao.add(user2);
+		
+		user1.setName("오민규");
+		user1.setPassword("springno6");
+		user1.setLevel(Level.GOLD);
+		user1.setLogin(1000);
+		user1.setRecommend(999);
+		dao.update(user1);
+		
+		User user1update = dao.get(user1.getId());
+		checkSameUser(user1, user1update);
+		User user2sam = dao.get(user2.getId());
+		checkSameUser(user2, user2sam);
 	}
 
 	@Test
-	public void addAndGet() throws SQLException {
+	public void addAndGet() {
 		
 		dao.deleteAll(); 		
 		assertThat(dao.getCount(), is(0)); 
@@ -50,16 +71,14 @@ public class UserDaoTest {
 		assertThat(dao.getCount(), is(2));		
 			
 		User userget1 = dao.get(user1.getId());
-		assertThat(user1.getName(), is(userget1.getName()));
-		assertThat(user1.getPassword(), is(userget1.getPassword()));
+		checkSameUser(userget1, user1);
 		
 		User userget2 = dao.get(user2.getId());
-		assertThat(user2.getName(), is(userget2.getName()));
-		assertThat(user2.getPassword(), is(userget2.getPassword()));
+		checkSameUser(userget2, user2);
 	}
 	
 	@Test
-	public void count() throws SQLException{
+	public void count(){
 		
 		dao.deleteAll();
 		assertThat(dao.getCount(), is(0));
@@ -75,7 +94,7 @@ public class UserDaoTest {
 	}
 	
 	@Test(expected=EmptyResultDataAccessException.class) //실행 중 예외 발생 기대 
-	public void getUserFailure() throws SQLException{
+	public void getUserFailure(){
 		
 		dao.deleteAll();
 		assertThat(dao.getCount(), is(0));
@@ -84,7 +103,7 @@ public class UserDaoTest {
 	}
 	
 	@Test
-	public void getAll() throws SQLException{
+	public void getAll(){
 		dao.deleteAll();
 		
 		List<User> users0 = dao.getAll();
@@ -114,6 +133,9 @@ public class UserDaoTest {
 		assertThat(user1.getId(), is(user2.getId()));
 		assertThat(user1.getName(), is(user2.getName()));
 		assertThat(user1.getPassword(), is(user2.getPassword()));
+		assertThat(user1.getLevel(), is(user2.getLevel()));
+		assertThat(user1.getLogin(), is(user2.getLogin()));
+		assertThat(user1.getRecommend(), is(user2.getRecommend()));
 	}
 	
 	@Test(expected=DuplicateKeyException.class)

@@ -10,6 +10,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import me.ujuin81.user.domain.Level;
 import me.ujuin81.user.domain.User;
 
 public class UserDaoJdbc implements UserDao {
@@ -17,6 +18,13 @@ public class UserDaoJdbc implements UserDao {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
+	@Override
+	public void update(User user) {
+		this.jdbcTemplate.update("update users set name= ?, password = ?, level = ?, login = ?, recommend = ? where id = ?", 
+				user.getName(), user.getPassword(), user.getLevel().intValue(),
+				user.getLogin(), user.getRecommend(), user.getId());
+	}
+
 	private JdbcTemplate jdbcTemplate;
 	
 	private RowMapper<User> userMapper = new RowMapper<User>() {
@@ -27,13 +35,17 @@ public class UserDaoJdbc implements UserDao {
 			user.setId(rs.getString("id"));
 			user.setName(rs.getString("name"));
 			user.setPassword(rs.getString("password"));
+			user.setLevel(Level.valueOf(rs.getInt("level")));
+			user.setLogin(rs.getInt("login"));
+			user.setRecommend(rs.getInt("recommend"));
 			return user;
 		}
 	};
 	
 	public void add(User user) {
-		this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)",
-				user.getId(), user.getName(), user.getPassword());
+		this.jdbcTemplate.update("insert into users(id, name, password, level, login, recommend) values(?,?,?,?,?,?)",
+				user.getId(), user.getName(), user.getPassword(),
+				user.getLevel().intValue(), user.getLogin(), user.getRecommend());
 	}
 	
 	public void deleteAll() {
