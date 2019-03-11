@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import me.ujuin81.user.dao.UserDao;
 import me.ujuin81.user.domain.Level;
@@ -29,7 +30,7 @@ public class UserServiceTest {
 	
 	@Autowired UserService userService;
 	@Autowired UserDao userDao;
-	@Autowired DataSource dataSource;
+	@Autowired PlatformTransactionManager transactionManager;
 	List<User> users;
 	
 	@Before
@@ -44,7 +45,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void upgradeLevels() throws Exception {
+	public void upgradeLevels() {
 		userDao.deleteAll();		
 		for(User user : users) {
 			userDao.add(user);
@@ -92,10 +93,10 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void upgradeAllOrNothing() throws Exception {
+	public void upgradeAllOrNothing() {
 		UserService testUserService = new TestUserService(users.get(3).getId()); 
 		testUserService.setUserDao(this.userDao);
-		testUserService.setDataSource(this.dataSource);
+		testUserService.setTransactionManager(this.transactionManager);
 		
 		userDao.deleteAll();
 		for(User user : users) {
