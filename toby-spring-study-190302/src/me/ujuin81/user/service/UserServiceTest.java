@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -45,11 +49,15 @@ public class UserServiceTest {
 	}
 	
 	@Test
+	@DirtiesContext
 	public void upgradeLevels() {
 		userDao.deleteAll();		
 		for(User user : users) {
 			userDao.add(user);
 		}
+		
+		MockMailSender mockMailSender = new MockMailSender();
+		userService.setMailSender(mockMailSender);
 		
 		userService.upgradeLevels();
 		
@@ -58,6 +66,11 @@ public class UserServiceTest {
 		checkLevelUpgrade(users.get(2), false);
 		checkLevelUpgrade(users.get(3), true);
 		checkLevelUpgrade(users.get(4), false);
+		
+		List<String> requests = mockMailSender.getRequests();
+		assertThat(requests.size(), is(2));
+		assertThat(requests.get(0), is(users.get(1).getEmail()));
+		assertThat(requests.get(1), is(users.get(3).getEmail()));
 	}
 	
 	private void checkLevelUpgrade(User user, boolean upgraded) {
@@ -129,6 +142,23 @@ public class UserServiceTest {
 	}
 	
 	static class TestUserServiceException extends RuntimeException{		
+	}
+	
+	static class MockMailSender implements MailSender{
+		private List<String> requests = new ArrayList<String>();
+		
+		public List<String> getRequests() {
+			return requests;
+		}
+
+		@Override
+		public void send(SimpleMailMessage simpleMessage) throws MailException {
+			requests.add(simpleMessage.getTo()[0]);
+		}
+
+		@Override
+		public void send(SimpleMailMessage... simpleMessages) throws MailException {			
+		}
 	}
 	
 }
