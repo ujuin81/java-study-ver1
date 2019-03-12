@@ -16,3 +16,5 @@
 
 1. Project > Properties > Java Build Path > [Add Library...] > JUnit 선택 
 	: JUnit 5 버전으로 콘솔 실행시 initializationError, No runnable methods 오류 발생 >> JUnit 4 사용 
+
+##### [ch6.2.4] Mockito library 추가 (mockito-all-1.10.19.jar)
