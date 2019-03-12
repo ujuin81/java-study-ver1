@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,6 +55,29 @@ public class UserServiceTest {
 	public void upgradeLevels() {
 		UserServiceImpl userServiceImpl = new UserServiceImpl();
 		
+		MockUserDao mockUserDao = new MockUserDao(this.users);
+		userServiceImpl.setUserDao(mockUserDao);
+		
+		MockMailSender mockMailSender = new MockMailSender();
+		userServiceImpl.setMailSender(mockMailSender);
+		
+		userServiceImpl.upgradeLevels();
+		
+		List<User> updated = mockUserDao.getUpdated();
+		assertThat(updated.size(), is(2));
+		checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
+		checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
+		
+		List<String> requests = mockMailSender.getRequests();
+		assertThat(requests.size(), is(2));
+		assertThat(requests.get(0), is(users.get(1).getEmail()));
+		assertThat(requests.get(1), is(users.get(3).getEmail()));
+	}
+	
+	@Test 
+	public void mockUpgradeLevels() {
+		UserServiceImpl userServiceImpl = new UserServiceImpl();
+		
 		UserDao mockUserDao = mock(UserDao.class);
 		when(mockUserDao.getAll()).thenReturn(this.users);
 		userServiceImpl.setUserDao(mockUserDao);
@@ -75,16 +99,6 @@ public class UserServiceTest {
 		List<SimpleMailMessage> mailMessages = mailMessageArg.getAllValues();
 		assertThat(mailMessages.get(0).getTo()[0], is(users.get(1).getEmail()));
 		assertThat(mailMessages.get(1).getTo()[0], is(users.get(3).getEmail()));
-		
-//		List<User> updated = mockUserDao.getUpdated();
-//		assertThat(updated.size(), is(2));
-//		checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
-//		checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
-//		
-//		List<String> requests = mockMailSender.getRequests();
-//		assertThat(requests.size(), is(2));
-//		assertThat(requests.get(0), is(users.get(1).getEmail()));
-//		assertThat(requests.get(1), is(users.get(3).getEmail()));
 	}
 	
 	private void checkUserAndLevel(User updated, String expectedId, Level expectedLevel) {
