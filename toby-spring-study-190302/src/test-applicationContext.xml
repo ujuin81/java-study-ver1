@@ -12,10 +12,14 @@
 		<property name="password" value="book" />
 	</bean>
 	
-	<bean id="userService" class="me.ujuin81.user.service.UserService">
-		<property name="userDao" ref="userDao"></property>
-		<property name="transactionManager" ref="transactionManager"></property>
-		<property name="mailSender" ref="mailSender"></property>
+	<bean id="userService" class="me.ujuin81.user.service.UserServiceTx">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="userService" ref="userServiceImpl" />
+	</bean>
+	
+	<bean id="userServiceImpl" class="me.ujuin81.user.service.UserServiceImpl">
+		<property name="userDao" ref="userDao" />
+		<property name="mailSender" ref="mailSender" />
 	</bean>
 	
 	<bean id="mailSender" class="me.ujuin81.user.service.DummyMailSender" />

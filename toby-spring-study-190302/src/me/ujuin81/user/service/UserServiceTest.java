@@ -1,7 +1,7 @@
 package me.ujuin81.user.service;
 
-import static me.ujuin81.user.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
-import static me.ujuin81.user.service.UserService.MIN_RECOMMEND_FOR_GOLD;
+import static me.ujuin81.user.service.UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER;
+import static me.ujuin81.user.service.UserServiceImpl.MIN_RECOMMEND_FOR_GOLD;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -32,6 +32,7 @@ import me.ujuin81.user.domain.User;
 public class UserServiceTest {
 	
 	@Autowired UserService userService;
+	@Autowired UserServiceImpl userServiceImpl;
 	@Autowired UserDao userDao;
 	@Autowired PlatformTransactionManager transactionManager;
 	@Autowired MailSender mailSender;
@@ -57,7 +58,7 @@ public class UserServiceTest {
 		}
 		
 		MockMailSender mockMailSender = new MockMailSender();
-		userService.setMailSender(mockMailSender);
+		userServiceImpl.setMailSender(mockMailSender);
 		
 		userService.upgradeLevels();
 		
@@ -107,10 +108,13 @@ public class UserServiceTest {
 	
 	@Test
 	public void upgradeAllOrNothing() {
-		UserService testUserService = new TestUserService(users.get(3).getId()); 
+		TestUserService testUserService = new TestUserService(users.get(3).getId()); 
 		testUserService.setUserDao(this.userDao);
-		testUserService.setTransactionManager(this.transactionManager);
 		testUserService.setMailSender(this.mailSender);
+		
+		UserServiceTx txUserService = new UserServiceTx();
+		txUserService.setTransactionManager(this.transactionManager);
+		txUserService.setUserService(testUserService);
 		
 		userDao.deleteAll();
 		for(User user : users) {
@@ -118,7 +122,7 @@ public class UserServiceTest {
 		}
 		
 		try {
-			testUserService.upgradeLevels();
+			txUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
 		} catch (TestUserServiceException e) {
 		}
@@ -126,7 +130,7 @@ public class UserServiceTest {
 		checkLevelUpgrade(users.get(1), false);
 	}
 	
-	static class TestUserService extends UserService{
+	static class TestUserService extends UserServiceImpl{
 		private String id;
 		
 		public TestUserService(String id) {
