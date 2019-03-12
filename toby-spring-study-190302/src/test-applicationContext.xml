@@ -15,7 +15,10 @@
 	<bean id="userService" class="me.ujuin81.user.service.UserService">
 		<property name="userDao" ref="userDao"></property>
 		<property name="transactionManager" ref="transactionManager"></property>
+		<property name="mailSender" ref="mailSender"></property>
 	</bean>
+	
+	<bean id="mailSender" class="me.ujuin81.user.service.DummyMailSender" />
 	
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
