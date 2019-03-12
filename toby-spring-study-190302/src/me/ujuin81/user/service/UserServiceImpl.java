@@ -24,12 +24,6 @@ public class UserServiceImpl implements UserService {
 		this.mailSender = mailSender;
 	}
 	
-//	private PlatformTransactionManager transactionManager;
-//	
-//	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-//		this.transactionManager = transactionManager;
-//	}
-	
 	public void upgradeLevels() {
 		List<User> users = userDao.getAll();
 		for(User user : users) {
@@ -37,16 +31,6 @@ public class UserServiceImpl implements UserService {
 				upgradeLevel(user);
 			}
 		}
-		
-//		TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());		
-//		
-//		try {	
-//			upgradeLevelsInternal();
-//			this.transactionManager.commit(status);
-//		} catch(Exception e) {
-//			this.transactionManager.rollback(status);
-//			throw e;
-//		}
 	}
 	
 	private boolean canUpgrade(User user) {
