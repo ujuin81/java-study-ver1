@@ -7,14 +7,20 @@
 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost/testdb?verifyServerCertificate=false&amp;useSSL=false" />
+		<property name="url" value="jdbc:mysql://localhost/testdb?verifyServerCertificate=false&amp;useSSL=false&amp;characterEncoding=UTF-8" />
 		<property name="username" value="spring" />
 		<property name="password" value="book" />
 	</bean>
 	
-	<bean id="userService" class="me.ujuin81.user.service.UserServiceTx">
+	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="userService" class="me.ujuin81.user.service.TxProxyFactoryBean">
+		<property name="target" ref="userServiceImpl" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="userService" ref="userServiceImpl" />
+		<property name="pattern" value="upgradeLevels" />
+		<property name="serviceInterface" value="me.ujuin81.user.service.UserService" />
 	</bean>
 	
 	<bean id="userServiceImpl" class="me.ujuin81.user.service.UserServiceImpl">
@@ -25,10 +31,6 @@
 	<bean id="mailSender" class="me.ujuin81.user.service.DummyMailSender" />
 	
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	
-	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
         

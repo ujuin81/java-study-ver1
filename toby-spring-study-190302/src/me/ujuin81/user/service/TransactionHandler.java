@@ -30,7 +30,7 @@ public class TransactionHandler implements InvocationHandler {
 		if(method.getName().startsWith(pattern)) {
 			return invokeInTransaction(method, args);
 		} else {
-			return null;
+			return method.invoke(target, args);
 		}
 	}
 	

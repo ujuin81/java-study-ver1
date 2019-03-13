@@ -6,9 +6,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -34,11 +38,13 @@ import me.ujuin81.user.domain.User;
 @ContextConfiguration(locations="/test-applicationContext.xml")
 public class UserServiceTest {
 	
-	@Autowired UserService userService;
-	@Autowired UserServiceImpl userServiceImpl;
+	@Autowired UserService userService;	
 	@Autowired UserDao userDao;
-	@Autowired PlatformTransactionManager transactionManager;
+	@Autowired UserServiceImpl userServiceImpl;
 	@Autowired MailSender mailSender;
+	@Autowired PlatformTransactionManager transactionManager;
+	@Autowired ApplicationContext context;
+	
 	List<User> users;
 	
 	@Before
@@ -140,22 +146,16 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void upgradeAllOrNothing() {
+	@DirtiesContext
+	public void upgradeAllOrNothing() throws Exception {
 		TestUserService testUserService = new TestUserService(users.get(3).getId()); 
 		testUserService.setUserDao(this.userDao);
 		testUserService.setMailSender(this.mailSender);
 		
-		TransactionHandler txHandler = new TransactionHandler();
-		txHandler.setTarget(testUserService);
-		txHandler.setTransactionManager(transactionManager);
-		txHandler.setPattern("upgradeLevels");
-		
-		
-		UserService txUserService = (UserService)Proxy.newProxyInstance(
-				getClass().getClassLoader(), 
-				new Class[] {UserService.class},
-				txHandler);
-		
+		TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
+		txProxyFactoryBean.setTarget(testUserService);
+		UserService txUserService = (UserService)txProxyFactoryBean.getObject();
+				
 		userDao.deleteAll();
 		for(User user : users) {
 			userDao.add(user);

@@ -1,13 +1,10 @@
-package me.ujuin81.user.service;
+package me.ujuin81.user.domain;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import me.ujuin81.user.domain.Level;
-import me.ujuin81.user.domain.User;
 
 public class UserTest {
 	User user;
