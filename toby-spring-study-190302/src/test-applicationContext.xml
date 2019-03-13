@@ -16,11 +16,13 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<bean id="userService" class="me.ujuin81.user.service.TxProxyFactoryBean">
+	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target" ref="userServiceImpl" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="pattern" value="upgradeLevels" />
-		<property name="serviceInterface" value="me.ujuin81.user.service.UserService" />
+		<property name="interceptorNames">
+			<list>
+				<value>transactionAdvisor</value>
+			</list>
+		</property>
 	</bean>
 	
 	<bean id="userServiceImpl" class="me.ujuin81.user.service.UserServiceImpl">
@@ -32,6 +34,19 @@
 	
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="transactionAdvice" class="me.ujuin81.user.service.TransactionAdvice">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+	
+	<bean id="trasactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+		<property name="mappedName" value="upgrade*" />
+	</bean>
+	
+	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<property name="advice" ref="transactionAdvice" />
+		<property name="pointcut" ref="trasactionPointcut" />
 	</bean>
         
 </beans>
