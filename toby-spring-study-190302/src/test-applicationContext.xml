@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-        http://www.springframework.org/schema/beans/spring-beans.xsd">
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop 
+   		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 
 	<bean id="dataSource"
@@ -13,31 +16,25 @@
 		<property name="username" value="spring" />
 		<property name="password" value="book" />
 	</bean>
-	
+
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
 	<!-- aop -->
-	<bean
-		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
-	
+	<aop:config>
+		<aop:advisor advice-ref="transactionAdvice"
+			pointcut="execution(* *..*ServiceImpl.upgrade*(..))" />
+		<!-- <aop:pointcut expression="execution(* *..*ServiceImpl.upgrade*(..))" 
+			id="trasactionPointcut" /> <aop:advisor advice-ref="transactionAdvice" pointcut-ref="trasactionPointcut"/> -->
+	</aop:config>
+
 	<bean id="transactionAdvice"
 		class="me.ujuin81.user.service.TransactionAdvice">
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
-	
-	<bean id="trasactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
-		<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))" />
-	</bean>
 
-	<bean id="transactionAdvisor"
-		class="org.springframework.aop.support.DefaultPointcutAdvisor">
-		<property name="advice" ref="transactionAdvice" />
-		<property name="pointcut" ref="trasactionPointcut" />
-	</bean>
-	
 	<!-- application components -->
 	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
@@ -52,7 +49,7 @@
 	<bean id="testUserService"
 		class="me.ujuin81.user.service.UserServiceTest$TestUserService"
 		parent="userService" />
-		
+
 	<bean id="mailSender"
 		class="me.ujuin81.user.service.DummyMailSender" />
 </beans>
