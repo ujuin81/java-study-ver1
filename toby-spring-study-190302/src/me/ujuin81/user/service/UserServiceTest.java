@@ -166,7 +166,7 @@ public class UserServiceTest {
 		assertThat(testUserService, is(instanceOf(java.lang.reflect.Proxy.class)));
 	}
 	
-	static class TestUserServiceImpl extends UserServiceImpl{
+	static class TestUserService extends UserServiceImpl{
 		private String id = "madnite1";
 
 		@Override

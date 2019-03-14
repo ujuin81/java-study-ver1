@@ -28,10 +28,8 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
-	<bean id="trasactionPointcut"
-		class="me.ujuin81.user.service.NameMatchClassMethodPointcut">
-		<property name="mappedClassName" value="*ServiceImpl" />
-		<property name="mappedName" value="upgrade*" />
+	<bean id="trasactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+		<property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))" />
 	</bean>
 
 	<bean id="transactionAdvisor"
@@ -52,7 +50,7 @@
 	</bean>
 
 	<bean id="testUserService"
-		class="me.ujuin81.user.service.UserServiceTest$TestUserServiceImpl"
+		class="me.ujuin81.user.service.UserServiceTest$TestUserService"
 		parent="userService" />
 		
 	<bean id="mailSender"

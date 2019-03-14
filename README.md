@@ -18,3 +18,6 @@
 	: JUnit 5 버전으로 콘솔 실행시 initializationError, No runnable methods 오류 발생 >> JUnit 4 사용 
 
 ##### [ch6.2.4] Mockito library 추가 (mockito-all-1.10.19.jar)
+
+##### [ch6.5.3] library 추가 (aspectjweaver-1.6.2.jar) 
+	: java.lang.NoClassDefFoundError: org/aspectj/weaver/reflect/ReflectionWorld$ReflectionWorldException 해결 
