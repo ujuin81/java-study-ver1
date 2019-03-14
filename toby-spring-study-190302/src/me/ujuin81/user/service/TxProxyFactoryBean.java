@@ -3,7 +3,6 @@ package me.ujuin81.user.service;
 import java.lang.reflect.Proxy;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 
 public class TxProxyFactoryBean implements FactoryBean<Object> {

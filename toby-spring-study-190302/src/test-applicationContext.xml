@@ -1,52 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-        
 
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost/testdb?verifyServerCertificate=false&amp;useSSL=false&amp;characterEncoding=UTF-8" />
+		<property name="url"
+			value="jdbc:mysql://localhost/testdb?verifyServerCertificate=false&amp;useSSL=false&amp;characterEncoding=UTF-8" />
 		<property name="username" value="spring" />
 		<property name="password" value="book" />
 	</bean>
 	
-	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
+
+	<!-- aop -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
 	
-	<bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="target" ref="userServiceImpl" />
-		<property name="interceptorNames">
-			<list>
-				<value>transactionAdvisor</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="userServiceImpl" class="me.ujuin81.user.service.UserServiceImpl">
-		<property name="userDao" ref="userDao" />
-		<property name="mailSender" ref="mailSender" />
-	</bean>
-	
-	<bean id="mailSender" class="me.ujuin81.user.service.DummyMailSender" />
-	
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-	
-	<bean id="transactionAdvice" class="me.ujuin81.user.service.TransactionAdvice">
+	<bean id="transactionAdvice"
+		class="me.ujuin81.user.service.TransactionAdvice">
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
-	<bean id="trasactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+	<bean id="trasactionPointcut"
+		class="me.ujuin81.user.service.NameMatchClassMethodPointcut">
+		<property name="mappedClassName" value="*ServiceImpl" />
 		<property name="mappedName" value="upgrade*" />
 	</bean>
-	
-	<bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+
+	<bean id="transactionAdvisor"
+		class="org.springframework.aop.support.DefaultPointcutAdvisor">
 		<property name="advice" ref="transactionAdvice" />
 		<property name="pointcut" ref="trasactionPointcut" />
 	</bean>
-        
+	
+	<!-- application components -->
+	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="userService"
+		class="me.ujuin81.user.service.UserServiceImpl">
+		<property name="userDao" ref="userDao" />
+		<property name="mailSender" ref="mailSender" />
+	</bean>
+
+	<bean id="testUserService"
+		class="me.ujuin81.user.service.UserServiceTest$TestUserServiceImpl"
+		parent="userService" />
+		
+	<bean id="mailSender"
+		class="me.ujuin81.user.service.DummyMailSender" />
 </beans>
