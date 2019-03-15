@@ -26,16 +26,7 @@
 	</bean>
 
 	<!-- aop -->
-	<aop:config>
-		<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)" />
-	</aop:config>
-	
-	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="get*" read-only="true" />
-			<tx:method name="*"/>
-		</tx:attributes>
-	</tx:advice>
+	<tx:annotation-driven/>
 
 	<!-- application components -->
 	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">
