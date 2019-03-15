@@ -2,10 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/aop 
-   		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+   		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+   		http://www.springframework.org/schema/tx 
+   		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
 
 	<bean id="dataSource"
@@ -24,16 +27,15 @@
 
 	<!-- aop -->
 	<aop:config>
-		<aop:advisor advice-ref="transactionAdvice"
-			pointcut="execution(* *..*ServiceImpl.upgrade*(..))" />
-		<!-- <aop:pointcut expression="execution(* *..*ServiceImpl.upgrade*(..))" 
-			id="trasactionPointcut" /> <aop:advisor advice-ref="transactionAdvice" pointcut-ref="trasactionPointcut"/> -->
+		<aop:advisor advice-ref="transactionAdvice" pointcut="bean(*Service)" />
 	</aop:config>
-
-	<bean id="transactionAdvice"
-		class="me.ujuin81.user.service.TransactionAdvice">
-		<property name="transactionManager" ref="transactionManager" />
-	</bean>
+	
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="*"/>
+		</tx:attributes>
+	</tx:advice>
 
 	<!-- application components -->
 	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">

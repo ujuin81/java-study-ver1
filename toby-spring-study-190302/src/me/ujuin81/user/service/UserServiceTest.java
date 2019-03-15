@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -166,6 +167,11 @@ public class UserServiceTest {
 		assertThat(testUserService, is(instanceOf(java.lang.reflect.Proxy.class)));
 	}
 	
+	@Test(expected=TransientDataAccessResourceException.class)
+	public void readOnlyTransactionAttribute() {
+		testUserService.getAll();
+	}
+	
 	static class TestUserService extends UserServiceImpl{
 		private String id = "madnite1";
 
@@ -175,6 +181,14 @@ public class UserServiceTest {
 			super.upgradeLevel(user);
 		}
 		
+		//읽기 전용 메소드에 쓰기 작업 추가 테스트
+		@Override
+		public List<User> getAll() {
+			for(User user : super.getAll()) {
+				super.update(user);
+			}
+			return null;
+		}
 	}
 	
 	static class TestUserServiceException extends RuntimeException{		
