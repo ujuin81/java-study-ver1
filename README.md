@@ -21,3 +21,6 @@
 
 ##### [ch6.5.3] library 추가 (aspectjweaver-1.6.2.jar) 
 	: java.lang.NoClassDefFoundError: org/aspectj/weaver/reflect/ReflectionWorld$ReflectionWorldException 해결 
+
+##### [ch7.2.1]	JAXB 
+	: cmd > xjc -p me.ujuin81.user.sqlservice.jaxb sqlmap.xsd -d src
