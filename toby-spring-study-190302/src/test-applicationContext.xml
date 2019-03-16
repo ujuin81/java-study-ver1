@@ -40,6 +40,7 @@
 	
 	<bean id="sqlService" class="me.ujuin81.user.sqlservice.OxmSqlService">
 		<property name="unmarshaller" ref="unmarshaller" />
+		<property name="sqlmap" value="classpath:me/ujuin81/user/dao/sqlmap.xml" />
 	</bean>
 	
 	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
