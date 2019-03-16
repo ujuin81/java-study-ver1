@@ -15,6 +15,8 @@ import me.ujuin81.user.sqlservice.jaxb.SqlType;
 import me.ujuin81.user.sqlservice.jaxb.Sqlmap;
 
 public class OxmSqlService implements SqlService {
+	//loadSql, getSql이 BaseSqlService와 중복 -> BaseSqlService로 위임 
+	private final BaseSqlService baseSqlService = new BaseSqlService();
 	private final OxmSqlReader oxmSqlReader = new OxmSqlReader();
 	
 	private SqlRegistry sqlRegistry = new HashMapSqlRegistry();
@@ -32,17 +34,24 @@ public class OxmSqlService implements SqlService {
 	}
 	
 	@PostConstruct
-	public void loadSql() {
-		this.oxmSqlReader.read(this.sqlRegistry);
+	public void loadSql() {		
+		this.baseSqlService.setSqlReader(this.oxmSqlReader);
+		this.baseSqlService.setSqlRegistry(this.sqlRegistry);
+		
+		this.baseSqlService.loadSql(); 
+		//↑BaseSqlService로 위임  
+		//this.oxmSqlReader.read(this.sqlRegistry);
 	}
 
 	@Override
 	public String getSql(String key) throws SqlRetrievalFailureException {
-		try {
-			return this.sqlRegistry.findSql(key);
-		} catch (SqlNotFoundException e) {
-			throw new SqlRetrievalFailureException(e);
-		}
+		return this.baseSqlService.getSql(key); 
+		//↑BaseSqlService로 위임  
+		//try {
+		//	return this.sqlRegistry.findSql(key);
+		//} catch (SqlNotFoundException e) {
+		//	throw new SqlRetrievalFailureException(e);
+		//}
 	}
 	
 	private class OxmSqlReader implements SqlReader{
