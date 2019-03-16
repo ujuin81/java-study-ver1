@@ -24,3 +24,6 @@
 
 ##### [ch7.2.1]	JAXB 
 	: cmd > xjc -p me.ujuin81.user.sqlservice.jaxb sqlmap.xsd -d src
+
+##### [ch7.3.1]	Castor library 추가 (castor-1.2.jar)
+	: java.lang.ClassNotFoundException: org.exolab.castor.xml.XMLException 해결 

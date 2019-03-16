@@ -38,18 +38,13 @@
 		<property name="sqlService" ref="sqlService" />
 	</bean>
 	
-	<bean id="sqlService" class="me.ujuin81.user.sqlservice.DefaultSqlService" />
-	
-	<!-- <bean id="sqlService" class="me.ujuin81.user.sqlservice.BaseSqlService">
-		<property name="sqlReader" ref="sqlReader"></property>
-		<property name="sqlRegistry" ref="sqlRegistry"></property>
+	<bean id="sqlService" class="me.ujuin81.user.sqlservice.OxmSqlService">
+		<property name="unmarshaller" ref="unmarshaller" />
 	</bean>
 	
-	<bean id="sqlReader" class="me.ujuin81.user.sqlservice.JaxbSqlReader">
-		<property name="sqlmapFile" value="sqlmap.xml" />
+	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPath" value="me.ujuin81.user.sqlservice.jaxb" />
 	</bean>
-	
-	<bean id="sqlRegistry" class="me.ujuin81.user.sqlservice.HashMapSqlRegistry" /> -->
 
 	<bean id="userService"
 		class="me.ujuin81.user.service.UserServiceImpl">
