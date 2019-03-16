@@ -10,7 +10,7 @@ import me.ujuin81.user.dao.UserDao;
 import me.ujuin81.user.sqlservice.jaxb.SqlType;
 import me.ujuin81.user.sqlservice.jaxb.Sqlmap;
 
-public class JaxbSqlReader implements SqlReader {
+public class JaxbXmlSqlReader implements SqlReader {
 	private final String DEFAULT_SQLMAP_FILE = "sqlmap.xml";
 	private String sqlmapFile = DEFAULT_SQLMAP_FILE;
 	
