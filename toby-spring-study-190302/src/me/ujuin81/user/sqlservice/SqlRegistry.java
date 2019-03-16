@@ -1,7 +1,7 @@
 package me.ujuin81.user.sqlservice;
 
 public interface SqlRegistry {
-	void registerSql(String key, String Value);
+	void registerSql(String key, String sql);
 	
 	String findSql(String key) throws SqlNotFoundException;
 }

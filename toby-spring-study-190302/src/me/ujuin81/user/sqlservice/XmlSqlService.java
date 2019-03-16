@@ -47,8 +47,8 @@ public class XmlSqlService implements SqlService, SqlRegistry, SqlReader {
 	}
 
 	@Override
-	public void registerSql(String key, String Value) {
-		sqlMap.put(key, Value);
+	public void registerSql(String key, String sql) {
+		sqlMap.put(key, sql);
 	}
 
 	@Override

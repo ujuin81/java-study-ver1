@@ -38,11 +38,18 @@
 		<property name="sqlService" ref="sqlService" />
 	</bean>
 	
-	<bean id="sqlService" class="me.ujuin81.user.sqlservice.XmlSqlService">
-		<property name="sqlReader" ref="sqlService"></property>
-		<property name="sqlRegistry" ref="sqlService"></property>
+	<bean id="sqlService" class="me.ujuin81.user.sqlservice.DefaultSqlService" />
+	
+	<!-- <bean id="sqlService" class="me.ujuin81.user.sqlservice.BaseSqlService">
+		<property name="sqlReader" ref="sqlReader"></property>
+		<property name="sqlRegistry" ref="sqlRegistry"></property>
+	</bean>
+	
+	<bean id="sqlReader" class="me.ujuin81.user.sqlservice.JaxbSqlReader">
 		<property name="sqlmapFile" value="sqlmap.xml" />
 	</bean>
+	
+	<bean id="sqlRegistry" class="me.ujuin81.user.sqlservice.HashMapSqlRegistry" /> -->
 
 	<bean id="userService"
 		class="me.ujuin81.user.service.UserServiceImpl">
