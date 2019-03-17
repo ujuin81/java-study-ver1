@@ -22,11 +22,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -34,13 +36,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.ujuin81.AppContext;
-import me.ujuin81.TestAppContext;
 import me.ujuin81.user.dao.UserDao;
 import me.ujuin81.user.domain.Level;
 import me.ujuin81.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes= {TestAppContext.class, AppContext.class})
+@ActiveProfiles("test")
+@ContextConfiguration(classes=AppContext.class)
 public class UserServiceTest {
 	
 	@Autowired UserService userService;	
@@ -49,6 +51,8 @@ public class UserServiceTest {
 	@Autowired MailSender mailSender;
 	@Autowired PlatformTransactionManager transactionManager;
 	@Autowired ApplicationContext context;
+	
+	@Autowired DefaultListableBeanFactory bf;
 	
 	List<User> users;
 	
@@ -61,6 +65,13 @@ public class UserServiceTest {
 				new User("madnite1", "이상호", "p4", "user4@ksug.org", Level.SILVER, 60, MIN_RECOMMEND_FOR_GOLD),
 				new User("green", "오민규", "p5", "user5@ksug.org", Level.GOLD, 100, Integer.MAX_VALUE)
 				);
+	}
+	
+	@Test
+	public void beans() {
+		for(String n : bf.getBeanDefinitionNames()) {
+			System.out.println(n + "\t" + bf.getBean(n).getClass().getName());
+		}
 	}
 	
 	@Test

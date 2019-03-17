@@ -38,3 +38,6 @@
 
 	: PreparedStatementCallback; SQL [insert into sqlmap(key_, sql_) values(?, ?)]; data exception: string data, right truncation;  table: SQLMAP column: SQL_; nested exception is java.sql.SQLDataException: data exception: string data, right truncation; 
 		==> sqlRegistrySchema.sql ==> VARCHAR(100)을 VARCHAR(1000)으로 변경. 
+
+##### [ch.7.6.4] javax.mail.jar 추가 
+	: java.lang.ClassNotFoundException: javax.mail.MessagingException 해결

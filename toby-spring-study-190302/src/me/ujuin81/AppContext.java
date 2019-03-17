@@ -2,25 +2,28 @@ package me.ujuin81;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.mysql.jdbc.Driver;
 
-import me.ujuin81.user.dao.UserDao;
+import me.ujuin81.user.service.DummyMailSender;
 import me.ujuin81.user.service.UserService;
+import me.ujuin81.user.service.UserServiceTest.TestUserService;
 
 @Configuration
 @EnableTransactionManagement 
 @ComponentScan(basePackages="me.ujuin81.user")
-@Import(SqlServiceContext.class)
+@Import({SqlServiceContext.class})
 public class AppContext {
 	
 	/** 
@@ -46,10 +49,28 @@ public class AppContext {
 		return tm;
 	}
 	
-	/**
-	 * 애플리케이션 로직 & 테스트
-	 */
-	@Autowired UserDao userDao;
+	@Configuration
+	@Profile("production")
+	public static class ProductionAppContext {
+		@Bean
+		public MailSender mailSender() {
+			JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+			mailSender.setHost("localhost");
+			return mailSender;
+		}
+	}
+	
+	@Configuration
+	@Profile("test")
+	public static class TestAppContext {	
+		@Bean
+		public UserService testUserService() {
+			return new TestUserService();
+		}
 
-	@Autowired UserService userService;
+		@Bean
+		public MailSender mailSender() {
+			return new DummyMailSender();
+		}
+	}
 }
