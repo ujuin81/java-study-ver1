@@ -3,26 +3,26 @@ package me.ujuin81.user.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import me.ujuin81.user.domain.Level;
 import me.ujuin81.user.domain.User;
 import me.ujuin81.user.sqlservice.SqlService;
 
+@Repository
 public class UserDaoJdbc implements UserDao {
+	@Autowired
 	SqlService sqlService;	
 	
+	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
-	public void setSqlService(SqlService sqlService) {
-		this.sqlService = sqlService;
 	}
 	
 	@Override
