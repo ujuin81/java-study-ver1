@@ -27,3 +27,14 @@
 
 ##### [ch7.3.1]	Castor library 추가 (castor-1.2.jar)
 	: java.lang.ClassNotFoundException: org.exolab.castor.xml.XMLException 해결 
+
+##### [ch.7.5.2] 
+
+	: SimpleJdbcTemplate Deprecated. ==> JdbcTemplate 으로 사용 (since Spring 3.1 in favor of JdbcTemplate and NamedParameterJdbcTemplate. The JdbcTemplate and NamedParameterJdbcTemplate now provide all the functionality of the SimpleJdbcTemplate.)
+
+	: queryForInt Deprecated ==> queryForObject 
+
+	: Driver for test database type [HSQL] is not available ==> hsqldb-2.4.1.jar 라이브러리 추가 
+
+	: PreparedStatementCallback; SQL [insert into sqlmap(key_, sql_) values(?, ?)]; data exception: string data, right truncation;  table: SQLMAP column: SQL_; nested exception is java.sql.SQLDataException: data exception: string data, right truncation; 
+		==> sqlRegistrySchema.sql ==> VARCHAR(100)을 VARCHAR(1000)으로 변경. 

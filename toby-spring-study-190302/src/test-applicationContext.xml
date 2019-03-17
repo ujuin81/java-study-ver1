@@ -4,6 +4,7 @@
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/aop 
@@ -11,7 +12,9 @@
    		http://www.springframework.org/schema/context
    		http://www.springframework.org/schema/context/spring-context-3.0.xsd
    		http://www.springframework.org/schema/tx 
-   		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+   		http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+   		http://www.springframework.org/schema/jdbc
+   		http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
 
 	<context:annotation-config />
 
@@ -30,23 +33,33 @@
 	</bean>
 
 	<!-- aop -->
-	<tx:annotation-driven/>
+	<tx:annotation-driven />
 
 	<!-- application components -->
 	<bean id="userDao" class="me.ujuin81.user.dao.UserDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
 		<property name="sqlService" ref="sqlService" />
 	</bean>
-	
-	<bean id="sqlService" class="me.ujuin81.user.sqlservice.OxmSqlService">
+
+	<bean id="sqlService"
+		class="me.ujuin81.user.sqlservice.OxmSqlService">
 		<property name="unmarshaller" ref="unmarshaller" />
 		<property name="sqlRegistry" ref="sqlRegistry" />
 	</bean>
-	
-	<bean id="sqlRegistry" class="me.ujuin81.user.sqlservice.updatable.ConcurrentHashMapSqlRegistry" />
-	
-	<bean id="unmarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-		<property name="contextPath" value="me.ujuin81.user.sqlservice.jaxb" />
+
+	<bean id="sqlRegistry"
+		class="me.ujuin81.user.sqlservice.updatable.EmbeddedDbSqlRegistry">
+		<property name="dataSource" ref="embeddedDatabase"></property>
+	</bean>
+		
+	<jdbc:embedded-database id="embeddedDatabase" type="HSQL">
+		<jdbc:script location="classpath:/me/ujuin81/user/sqlservice/updatable/sqlRegistrySchema.sql" />
+	</jdbc:embedded-database>
+
+	<bean id="unmarshaller"
+		class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="contextPath"
+			value="me.ujuin81.user.sqlservice.jaxb" />
 	</bean>
 
 	<bean id="userService"
