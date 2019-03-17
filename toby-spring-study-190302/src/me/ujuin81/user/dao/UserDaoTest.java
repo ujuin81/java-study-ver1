@@ -21,11 +21,12 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import me.ujuin81.TestApplicationContext;
 import me.ujuin81.user.domain.Level;
 import me.ujuin81.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/test-applicationContext.xml") 
+@ContextConfiguration(classes=TestApplicationContext.class) 
 public class UserDaoTest {
 	@Autowired UserDao dao;
 	@Autowired DataSource dataSource;
