@@ -33,13 +33,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import me.ujuin81.TestApplicationContext;
+import me.ujuin81.AppContext;
+import me.ujuin81.TestAppContext;
 import me.ujuin81.user.dao.UserDao;
 import me.ujuin81.user.domain.Level;
 import me.ujuin81.user.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=TestApplicationContext.class)
+@ContextConfiguration(classes= {TestAppContext.class, AppContext.class})
 public class UserServiceTest {
 	
 	@Autowired UserService userService;	
