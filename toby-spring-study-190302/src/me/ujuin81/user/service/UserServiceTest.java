@@ -186,7 +186,7 @@ public class UserServiceTest {
 		
 	}
 	
-	static class TestUserService extends UserServiceImpl{
+	public static class TestUserService extends UserServiceImpl{
 		private String id = "madnite1";
 
 		@Override
