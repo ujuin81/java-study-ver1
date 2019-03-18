@@ -2,17 +2,15 @@ package me.ujuin81;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.MailSender;
@@ -20,24 +18,29 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.mysql.jdbc.Driver;
-
+import me.ujuin81.user.dao.UserDao;
 import me.ujuin81.user.service.DummyMailSender;
 import me.ujuin81.user.service.UserService;
 import me.ujuin81.user.service.UserServiceTest.TestUserService;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = "me.ujuin81.user")
-@Import({ SqlServiceContext.class })
+@ComponentScan(basePackages = "me.ujuin81")
+@EnableSqlService //<--@Import({ SqlServiceContext.class })
+
 @PropertySource("/database.properties")
-public class AppContext {
+public class AppContext implements SqlMapConfig {
 	//@Autowired Environment env;
 	//↓↓↓↓↓↓↓↓↓↓↓↓ 둘 중 하나 선택해서 사용 
 	@Value("${db.driverClass}") Class<? extends java.sql.Driver> driverClass;
 	@Value("${db.url}") String url;
 	@Value("${db.username}") String username;
 	@Value("${db.password}") String password;
+		
+	@Override
+	public Resource getSqlMapResource() {
+		return new ClassPathResource("sqlmap.xml", UserDao.class);
+	}
 	
 	//@Value 주입 사용하려면 필요 
 	@Bean
@@ -66,8 +69,7 @@ public class AppContext {
 		dataSource.setDriverClass(this.driverClass);
 		dataSource.setUrl(this.url);
 		dataSource.setUsername(this.username);
-		dataSource.setPassword(this.password);
-		
+		dataSource.setPassword(this.password);		
 
 		return dataSource;
 	}

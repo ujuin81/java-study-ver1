@@ -41,3 +41,8 @@
 
 ##### [ch.7.6.4] javax.mail.jar 추가 
 	: java.lang.ClassNotFoundException: javax.mail.MessagingException 해결
+
+##### [ch.7.6.6] 
+	: @EnableSqlService로 변경 후 에러 (org.springframework.beans.factory.UnsatisfiedDependencyException) 
+		==> @ComponentScan(basePackages = "me.ujuin81.user") 
+				-> @ComponentScan(basePackages = "me.ujuin81") 로 변경
