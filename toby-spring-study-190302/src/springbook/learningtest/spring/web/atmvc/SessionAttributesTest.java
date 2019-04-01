@@ -1,4 +1,4 @@
-package springbook.learningtest.spring.web.controllers;
+package springbook.learningtest.spring.web.atmvc;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
