@@ -32,7 +32,7 @@ public class BindingTest extends AbstractDispatcherServletTest {
 		assertThat((Charset)charsetEditor.getValue(), is(Charset.forName("UTF-8")));
 	}
 	
-	//커스텀 프로퍼티 에디터 
+	//Custom PropertyEditor
 	static class LevelPropertyEditor extends PropertyEditorSupport {
 		public String getAsText() {
 			return String.valueOf(((Level)this.getValue()).intValue());
@@ -43,7 +43,7 @@ public class BindingTest extends AbstractDispatcherServletTest {
 		}
 	}
 	
-	//커스텀 프로퍼티 에디터 Test
+	//Custom PropertyEditor Test
 	@Test
 	public void levelPropertyEditor() {
 		LevelPropertyEditor levelEditor = new LevelPropertyEditor();
@@ -55,7 +55,7 @@ public class BindingTest extends AbstractDispatcherServletTest {
 		assertThat((Level)levelEditor.getValue(), is(Level.GOLD));
 	}
 	
-	//WebDataBinder에 커스텀 프로퍼티 에디터 등록 
+	//WebDataBinder에 Custom PropertyEditor 등록 
 	@Controller static class SearchController {
 		@InitBinder //<--- !! 
 		public void initBinder(WebDataBinder dataBinder) {
@@ -67,7 +67,7 @@ public class BindingTest extends AbstractDispatcherServletTest {
 		}
 	}
 	
-	//WebDataBinder에 커스텀 프로퍼티 에디터 등록 Test
+	//WebDataBinder에 Custom PropertyEditor 등록 Test
 	@Test
 	public void dataBinder() {
 		WebDataBinder dataBinder = new WebDataBinder(null);
@@ -75,7 +75,7 @@ public class BindingTest extends AbstractDispatcherServletTest {
 		assertThat(dataBinder.convertIfNecessary("1", Level.class), is(Level.BASIC));
 	}
 	
-	//커스텀 프로퍼티 에디터 : int로 타입변환시 범위 지정된 int로 타입변환 되도록  
+	//Custom PropertyEditor : int로 타입변환시 범위 지정된 int로 타입변환 되도록  
 	static class MinMaxPropertyEditor extends PropertyEditorSupport {
 		int min = Integer.MIN_VALUE;
 		int max = Integer.MAX_VALUE;
@@ -110,7 +110,7 @@ public class BindingTest extends AbstractDispatcherServletTest {
 		public String toString() { return "Member [age=" + age + ", id=" + id + "]"; }		
 	}
 	
-	//WebDataBinder에 특정 이름의 프로퍼티에만 적용되는 프로퍼티 에디터 등록(우선순위:커스텀 프로퍼티 에디터 >> 기본 프로퍼티 에디터) 
+	//WebDataBinder에 특정 이름의 프로퍼티에만 적용되는 Custom PropertyEditor 등록(우선순위:Custom PropertyEditor >> Default PropertyEditor) 
 	@Controller static class MemberController {
 		@InitBinder
 		public void initBinder(WebDataBinder dataBinder) {
@@ -121,6 +121,4 @@ public class BindingTest extends AbstractDispatcherServletTest {
 		@RequestMapping("/add") public void add(@ModelAttribute Member member) {
 		}
 	}
-
-	//fake property editor 
 }
