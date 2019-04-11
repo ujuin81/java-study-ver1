@@ -11,6 +11,10 @@
 </head>
 <body>
 	<h1>Hello!</h1>
-	<p>this is sample web page.</p>
+	<p th:text="${msg}">${msg}</p>
+	<form method="post" action="/send">
+		<input type="text" name="text1" th:value="${value}" />
+		<input type="submit" value="Click" />
+	</form>
 </body>
 </html>

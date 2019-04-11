@@ -11,12 +11,25 @@
 
 * 템플릿 사용하기 
   * Thymeleaf 템플릿 사용하기 
+
     1. 템플릿 작성. (컨트롤러가 있는 곳의 templates 폴더 안에 두어야 동작)
+
     2. 템플릿 읽도록 컨트롤러 수정 
+
        * `@Grab("thymeleaf-spring5")`
        * `@ResponseBody`
        * `ModelAndView `
+
+    3. 뷰와 컨트롤러 연계 
+
+       * `th:[type]="${[value]}"` ==> `th:text="${msg}"`
+
+       * `addObject` 
+       * 한글 깨짐 임시방편 처리 : native2ascii 
+         `$ native2ascii -encoding utf-8 app.groovy app2.groovy` -> `$ spring run app2.groovy ` 
+
   * Groovy로 템플릿 작성 
+
     1. 템플릿 작성 : 그루비 코드로 HTML 구조를 기술 (*.tpl) 
     2. 템플릿 읽도록 컨트롤러 수정 
        * Thymeleaf 부분에서 `@Grab("thymeleaf-spring5")` 부분만 제거하면 사용방법 동일 
