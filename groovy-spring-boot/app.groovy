@@ -1,12 +1,11 @@
-@RestController
+@Grab("thymeleaf-spring5") //thymeleaf가 아닌 groovy template 사용시 주석 처리 
+
+@Controller
 class App {
 	@RequestMapping("/")
-	def home() {
-		def header = "<html><body>"
-		def footer = "</body></html>"
-		def content = "<h1>Hello!</h1><p>this is html content.</p>"
-		
-
-		header + content + footer
+	@ResponseBody
+	def home(ModelAndView mav) {
+		mav.setViewName("home") //homeGroovy 
+		mav
 	}
 }
